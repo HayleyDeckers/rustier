@@ -12,5 +12,5 @@ crate-type = ["cdylib"]      # Creates dynamic lib
 
 [dependencies]
 num_enum = "0.5"
-r-macros = {path = "./R-macros"}
+rustier-macros = {path = "./rustier-macros", version = "0.1"}
 rayon = "1"
