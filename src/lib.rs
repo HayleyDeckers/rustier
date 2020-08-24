@@ -27,7 +27,7 @@ pub use r_types::*;
 pub use crate::interface::*;
 pub use crate::r_types::numerics::NumericVector;
 pub use crate::r_types::strings::*;
-use R_macros::R_export;
+use r_macros::R_export;
 
 #[R_export]
 fn hello_world() -> &'static str {

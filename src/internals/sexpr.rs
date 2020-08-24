@@ -1,7 +1,6 @@
 use num_enum::{TryFromPrimitive, TryFromPrimitiveError};
 use std::convert::TryFrom;
 use std::fmt;
-use std::io::Write;
 //see also https://www.brodieg.com/2019/02/18/an-unofficial-reference-for-internal-inspect/
 // also consider altrep of NA and sorted
 //The first five bits of the sxpinfo header specify one of up to 32 SEXPTYPEs.
@@ -221,7 +220,6 @@ pub struct Sexpr {
     gengc_next_node: *mut Sexpr,
     gengc_prev_node: *mut Sexpr,
     pub sxp: Sxp,
-    // _filing : [u64;3]
 }
 
 impl fmt::Debug for Sexpr {
@@ -296,13 +294,12 @@ impl fmt::Debug for Sexpr {
                         }
                     }
                 })
-                .field("attrib", &unsafe { self.attrib })
-                // .field("next", &unsafe { self.gengc_next_node.as_ref() })
+                .field("attrib", &self.attrib)
                 .finish(),
             Err(_) => f
                 .debug_struct("Sexpr")
                 .field("sxpinfo", &self.sxpinfo)
-                .field("attrib", &unsafe { self.attrib })
+                .field("attrib", &self.attrib)
                 // .field("next", &self.gengc_next_node)
                 .finish(),
         }

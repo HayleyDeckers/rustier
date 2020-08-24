@@ -16,7 +16,7 @@ impl RString {
         }
     }
     pub unsafe fn as_str_unchecked(&self) -> &str {
-        unsafe { std::str::from_utf8_unchecked((*self.sexp).sxp.vec.get_slice::<u8>()) }
+        std::str::from_utf8_unchecked((*self.sexp).sxp.vec.get_slice::<u8>())
     }
     pub fn as_str(&self) -> Result<&str, std::str::Utf8Error> {
         unsafe { std::str::from_utf8((*self.sexp).sxp.vec.get_slice::<u8>()) }

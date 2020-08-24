@@ -1,5 +1,5 @@
 [package]
-name = "R-macros"
+name = "r-macros"
 version = "0.1.0"
 authors = ["Hayley <github.com@codingcat.nl>"]
 edition = "2018"
