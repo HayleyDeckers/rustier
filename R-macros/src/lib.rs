@@ -35,10 +35,10 @@ impl Fold for InsertWrapperR {
         
     }
 }
-
+#[allow(non_snake_case)]
 #[proc_macro_attribute]
-pub fn R_export(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let mut tree: ItemFn = syn::parse(item.clone()).expect("has to e applied to func");
+pub fn R_export(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let tree: ItemFn = syn::parse(item.clone()).expect("has to e applied to func");
     let wrapped_fn = InsertWrapperR.fold_item_fn(tree.clone());
     let expanded :proc_macro2::TokenStream = parse_quote! {
         #tree

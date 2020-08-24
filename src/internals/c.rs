@@ -3,10 +3,10 @@ use crate::internals::sexpr::{SexpType, Sexpr};
 #[link(name = "R")]
 extern "C" {
     //should be const? maybe..
-    pub static mut R_NaReal: f64;
-    pub static mut R_NaInt: ::std::os::raw::c_int;
-    pub static mut R_NaString: *const Sexpr;
-    pub static mut R_NilValue: *const Sexpr;
+    // pub static mut R_NaReal: f64;
+    // pub static mut R_NaInt: ::std::os::raw::c_int;
+    // pub static mut R_NaString: *const Sexpr;
+    // pub static mut R_NilValue: *const Sexpr;
     //TODO: consider R_PreserveObject instead?
     // takes muts, really. All SEXPR are *mut Sexpr! check which are const safe?
     pub fn Rf_protect(s: *mut Sexpr) -> *mut Sexpr;
