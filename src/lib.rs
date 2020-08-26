@@ -1,12 +1,8 @@
-pub mod interface;
+pub mod interface_traits;
 mod internals;
 mod r_types;
 pub use internals::sexpr;
 pub use r_types::*;
-
-// pub trait IsRNa {
-//     fn is_na(&self) -> bool;
-// }
 
 // impl IsRNa for f64 {
 //     fn is_na(&self) -> bool {
@@ -24,7 +20,10 @@ pub use r_types::*;
 //     }
 // }
 
-pub use crate::interface::*;
+pub use crate::interface_traits::*;
+use crate::internals::c::{R_NilValue, Rf_error};
+pub use crate::r_types::integers::*;
+pub use crate::r_types::logicals::*;
 pub use crate::r_types::numerics::NumericVector;
 pub use crate::r_types::strings::*;
 use rustier_macros::R_export;
@@ -32,6 +31,13 @@ use rustier_macros::R_export;
 #[R_export]
 fn hello_world() -> &'static str {
     "Hello, World!"
+}
+
+#[R_export]
+fn lgl_to_i32(input: Option<bool>) -> i32 {
+    let x = Rlogical::from_bool(input);
+    let ret = unsafe { x.as_i32_unchecked() };
+    ret
 }
 
 #[R_export]

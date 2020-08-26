@@ -1,9 +1,22 @@
-use crate::interface::*;
-use crate::internals::sexpr::{SexpType, Sexpr};
+use crate::interface_traits::*;
+use crate::internals::{
+    c::R_NaReal,
+    sexpr::{SexpType, Sexpr},
+};
 use crate::r_types::Rbox;
 
 pub struct NumericVector {
     sexp: Sexpr,
+}
+
+impl Na for f64 {
+    fn na() -> Self {
+        R_NaReal()
+    }
+    fn is_na(&self) -> bool {
+        //todo: fix this at certain value?
+        self.to_bits() == Self::na().to_bits()
+    }
 }
 
 impl NumericVector {
@@ -18,48 +31,51 @@ impl NumericVector {
     }
 }
 
-impl FromR for &NumericVector {
-    fn from_r(r: *mut Sexpr) -> Option<Self> {
-        let ref_expr = unsafe { r.as_mut() }?;
+impl TryFromR for &NumericVector {
+    type Error = &'static str;
+    fn try_from_r(r: *mut Sexpr) -> Result<Self, Self::Error> {
+        let ref_expr = unsafe { r.as_mut() }.ok_or("Argument is a null pointer")?;
         if !ref_expr.sxpinfo.alt() {
             match ref_expr.sxpinfo.r#type().unwrap() {
-                SexpType::Real => Some(unsafe { &*(ref_expr as *mut Sexpr as *mut NumericVector) }),
-                _ => None,
+                SexpType::Real => Ok(unsafe { &*(ref_expr as *mut Sexpr as *mut NumericVector) }),
+                _ => Err("Argument is not a Numeric vector"),
             }
         } else {
-            None
+            Err("Argument is alt rep")
         }
     }
 }
 
-impl FromR for &[f64] {
-    fn from_r(r: *mut Sexpr) -> Option<Self> {
-        let nv = <&NumericVector>::from_r(r)?;
-        Some(nv.as_slice())
+impl TryFromR for &[f64] {
+    type Error = <&'static NumericVector as TryFromR>::Error;
+    fn try_from_r(r: *mut Sexpr) -> Result<Self, Self::Error> {
+        let nv = <&NumericVector>::try_from_r(r)?;
+        Ok(nv.as_slice())
     }
 }
 
-impl FromR for f64 {
-    fn from_r(r: *mut Sexpr) -> Option<Self> {
-        let slice = <&[f64]>::from_r(r)?;
-        if slice.len() == 1 {
-            Some(slice[0])
-        } else {
-            None
+impl TryFromR for f64 {
+    type Error = <&'static NumericVector as TryFromR>::Error;
+    fn try_from_r(r: *mut Sexpr) -> Result<Self, Self::Error> {
+        let slice = <&[f64]>::try_from_r(r)?;
+        match slice.len() {
+            1 => Ok(slice[0]),
+            _x => Err("Was expecting a numeric vector of size 1"),
         }
     }
 }
 
-impl ReturnableToR for &NumericVector {
-    fn return_to_r(self) -> *const Sexpr {
+impl IntoR for &NumericVector {
+    fn into_r(self) -> *const Sexpr {
         self as *const NumericVector as *const Sexpr
     }
 }
 
-impl ReturnableToR for f64 {
-    fn return_to_r(self) -> *const Sexpr {
+impl TryIntoR for f64 {
+    type Error = <&'static NumericVector as TryIntoR>::Error;
+    fn try_into_r(self) -> Result<*const Sexpr, Self::Error> {
         let mut vec = NumericVector::new_rboxed_with_size(1);
         vec.as_mut_slice()[0] = self;
-        vec.return_to_r()
+        (&vec).try_into_r()
     }
 }

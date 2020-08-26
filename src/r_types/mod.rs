@@ -2,7 +2,8 @@ use crate::internals::{
     c::*,
     sexpr::{SexpType, Sexpr},
 };
-
+pub mod integers;
+pub mod logicals;
 pub mod numerics;
 pub mod strings;
 
@@ -26,7 +27,7 @@ impl<T> std::ops::DerefMut for Rbox<T> {
 }
 
 impl Rbox<numerics::NumericVector> {
-    pub fn new_with_size(size: isize) -> Rbox<numerics::NumericVector> {
+    pub fn new_with_size(size: isize) -> Self {
         //todo: checks
         Rbox {
             ptr: unsafe { Rf_protect(Rf_allocVector(SexpType::Real, size)) },
@@ -34,9 +35,28 @@ impl Rbox<numerics::NumericVector> {
         }
     }
 }
+impl Rbox<integers::IntegerVector> {
+    pub fn new_with_size(size: isize) -> Self {
+        //todo: checks
+        Rbox {
+            ptr: unsafe { Rf_protect(Rf_allocVector(SexpType::Int, size)) },
+            _phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+impl Rbox<logicals::LogicalVector> {
+    pub fn new_with_size(size: isize) -> Self {
+        //todo: checks
+        Rbox {
+            ptr: unsafe { Rf_protect(Rf_allocVector(SexpType::Lgl, size)) },
+            _phantom: std::marker::PhantomData,
+        }
+    }
+}
 
 impl Rbox<strings::CharacterVector> {
-    pub fn new_with_size(size: isize) -> Rbox<strings::CharacterVector> {
+    pub fn new_with_size(size: isize) -> Self {
         //todo: checks
         Rbox {
             ptr: unsafe { Rf_protect(Rf_allocVector(SexpType::Str, size)) },
