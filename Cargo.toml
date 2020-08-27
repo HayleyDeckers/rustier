@@ -6,13 +6,20 @@ edition = "2018"
 description = "Make your R more Rusty! This crate lets you use a proc macro #[R_export] to make your Rust functions callable from R similar to what RCpp does for C. Still early in development. see the bottom of lib.rs for some examples of what can already be done though."
 license = "GPL-2.0+"
 repository = "https://github.com/HayleyDeckers/rustier"
+links = "R"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
 name = "rustier"
-crate-type = ["cdylib"]      # Creates dynamic lib
+crate-type = ["lib"]
 
 [dependencies]
 num_enum = "0.5"
 rustier-macros = {path = "./rustier-macros", version = "0.1"}
+
+[[example]]
+name = "libtest"
+crate-type = ["cdylib"]      # Creates dynamic lib
+
+[dev-dependencies]
 rayon = "1"
